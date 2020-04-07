@@ -3,12 +3,14 @@ import {
   ActionTypes,
   IUsersRequest,
   IUsersRequestError,
+  IUsersRequestPayload,
   IUsersRequestSuccess
 } from './types/actions';
 
-export function userRequest(): IUsersRequest {
+export function userRequest(payload: IUsersRequestPayload): IUsersRequest {
   return {
-    type: ActionTypes.USERS_REQUEST
+    type: ActionTypes.USERS_REQUEST,
+    payload
   };
 }
 

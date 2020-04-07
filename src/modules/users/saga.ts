@@ -1,20 +1,40 @@
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { all, call, put, takeEvery } from 'redux-saga/effects';
 
 import { ApiConfig, Config } from '../../config';
+import { IUser } from '../../types/user';
+import Api from '../../utils/api';
 import * as actions from './actions';
-import { ActionTypes } from './types/actions';
+import { ActionTypes, IUsersRequest, IUsersRequestPayload } from './types/actions';
 
-function fetchUsersApi() {
-  return fetch(`${ApiConfig.URL}${ApiConfig.endpoints.searchUsers('test', Config.MAX_RESULTS)}`)
-    .then((response) => ({ response }))
-    .catch((error) => ({ error }));
-}
+const fetchRepos = async (payload: string): Promise<any> => {
+  const { data } = await Api.get(payload);
+  return data;
+};
 
-export function* fetchUsersSaga() {
-  const { response } = yield call(fetchUsersApi);
-  console.log(response);
-  if (response) yield put(actions.userRequestSuccess(response.items));
-  else yield put(actions.userRequestError());
+const fetchUsersApi = async (payload: IUsersRequestPayload): Promise<any> => {
+  const { key } = payload;
+
+  const { data } = await Api.get(ApiConfig.endpoints.searchUsers(`${key}`, Config.MAX_RESULTS));
+  return data;
+};
+
+export function* fetchUsersSaga(action: IUsersRequest) {
+  const { payload } = action;
+
+  try {
+    const { ...usersData } = yield call(fetchUsersApi, payload);
+    const { ...reposData } = yield all(
+      usersData.items.map((item: any, key: number) => call(fetchRepos, item.repos_url))
+    );
+
+    usersData.items.forEach((user: IUser, key: number) => {
+      user.repositories = reposData[key];
+    });
+
+    yield put(actions.userRequestSuccess(usersData.items));
+  } catch (error) {
+    yield put(actions.userRequestError());
+  }
 }
 
 export default function* () {

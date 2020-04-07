@@ -10,6 +10,11 @@ export type Actions = IUsersRequest | IUsersRequestSuccess | IUsersRequestError;
 
 export interface IUsersRequest {
   readonly type: ActionTypes.USERS_REQUEST;
+  payload: IUsersRequestPayload;
+}
+
+export interface IUsersRequestPayload {
+  key: string;
 }
 
 export interface IUsersRequestSuccess {
