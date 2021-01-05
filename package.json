@@ -18,7 +18,7 @@
     "@types/yup": "^0.26.34",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "babel-eslint": "^10.1.0",
     "dotenv": "^8.2.0",
     "dotenv-webpack": "^1.7.0",
